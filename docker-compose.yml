@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kstock-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: kstock_db
+      MYSQL_USER: kstock_user
+      MYSQL_PASSWORD: kstock_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: kstock-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: kstock_user
+      DB_PASSWORD: kstock_password
+      DB_NAME: kstock_db
+      JWT_SECRET: suachavesuperseguraparaproducaokstock2026
+      JWT_EXPIRES_IN: 8h
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

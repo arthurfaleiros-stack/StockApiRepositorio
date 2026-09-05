@@ -1,0 +1,47 @@
+{
+  "name": "kstock-api",
+  "version": "1.0.0",
+  "description": "API RESTful para gerenciamento e controle de estoque, rastreamento de produtos e movimentações de inventário.",
+  "homepage": "https://github.com/RafaelCairesSantos/KStock-API#readme",
+  "bugs": {
+    "url": "https://github.com/RafaelCairesSantos/KStock-API/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RafaelCairesSantos/KStock-API.git"
+  },
+  "license": "ISC",
+  "author": "rafael santos",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "migrate": "node src/db/migrate.js",
+    "seed": "node src/db/seed.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "verbose": true
+  }
+}

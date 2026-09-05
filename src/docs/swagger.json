@@ -1,0 +1,218 @@
+﻿{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "KStock-API",
+    "version": "1.0.0",
+    "description": "API RESTful profissional para gerenciamento e controle de estoque, rastreamento de produtos e movimentações de inventário.",
+    "contact": {
+      "name": "Suporte KStock",
+      "email": "contato@kstock.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desenvolvimento Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Insira o token JWT no formato: Bearer <seu_token>"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "RESOURCE_NOT_FOUND" },
+              "message": { "type": "string", "example": "Recurso não encontrado." },
+              "details": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Cadastrar novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nome", "email", "senha"],
+                "properties": {
+                  "nome": { "type": "string", "example": "João da Silva" },
+                  "email": { "type": "string", "example": "joao@empresa.com" },
+                  "senha": { "type": "string", "example": "SenhaForte@123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário cadastrado com sucesso." },
+          "400": { "description": "Dados inválidos." },
+          "409": { "description": "E-mail já cadastrado." }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Realizar login e obter JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "senha"],
+                "properties": {
+                  "email": { "type": "string", "example": "admin@kstock.com" },
+                  "senha": { "type": "string", "example": "Admin@123456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login realizado com sucesso e token retornado." },
+          "401": { "description": "Credenciais inválidas." }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": ["Autenticação"],
+        "summary": "Consultar dados do usuário autenticado",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Dados do usuário logado e assinatura." },
+          "401": { "description": "Não autorizado." }
+        }
+      }
+    },
+    "/api/v1/produtos": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Listar produtos com filtros e paginação",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "categoria_id", "in": "query", "schema": { "type": "integer" } },
+          { "name": "fornecedor_id", "in": "query", "schema": { "type": "integer" } },
+          { "name": "alerta_estoque", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": { "description": "Lista paginada de produtos." }
+        }
+      },
+      "post": {
+        "tags": ["Produtos"],
+        "summary": "Cadastrar novo produto",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["categoria_id", "fornecedor_id", "nome", "codigo"],
+                "properties": {
+                  "categoria_id": { "type": "integer", "example": 1 },
+                  "fornecedor_id": { "type": "integer", "example": 1 },
+                  "nome": { "type": "string", "example": "Fone Bluetooth Pro" },
+                  "codigo": { "type": "string", "example": "FON-BT-01" },
+                  "descricao": { "type": "string", "example": "Fone com cancelamento de ruído" },
+                  "quantidade_atual": { "type": "integer", "example": 25 },
+                  "quantidade_minima": { "type": "integer", "example": 5 },
+                  "codigo_barras": { "type": "string", "example": "7891234567890" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Produto cadastrado com sucesso." },
+          "409": { "description": "Código SKU duplicado." }
+        }
+      }
+    },
+    "/api/v1/produtos/alerta-estoque": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Listar produtos com estoque baixo ou crítico",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Produtos em nível de reposição." }
+        }
+      }
+    },
+    "/api/v1/movimentacoes": {
+      "get": {
+        "tags": ["Movimentações"],
+        "summary": "Listar histórico de movimentações com filtros",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "produto_id", "in": "query", "schema": { "type": "integer" } },
+          { "name": "tipo", "in": "query", "schema": { "type": "string", "enum": ["ENTRADA", "SAIDA", "AJUSTE"] } }
+        ],
+        "responses": {
+          "200": { "description": "Lista de movimentações." }
+        }
+      },
+      "post": {
+        "tags": ["Movimentações"],
+        "summary": "Registrar movimentação de estoque (Atômica)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["produto_id", "tipo", "quantidade"],
+                "properties": {
+                  "produto_id": { "type": "integer", "example": 1 },
+                  "tipo": { "type": "string", "enum": ["ENTRADA", "SAIDA", "AJUSTE"], "example": "ENTRADA" },
+                  "quantidade": { "type": "integer", "example": 10 },
+                  "observacao": { "type": "string", "example": "Recebimento de lote do fornecedor" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Movimentação executada com sucesso e estoque atualizado." },
+          "422": { "description": "Saldo insuficiente em estoque." }
+        }
+      }
+    },
+    "/api/v1/historico": {
+      "get": {
+        "tags": ["Auditoria"],
+        "summary": "Consultar trilha de auditoria",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Registros de auditoria." }
+        }
+      }
+    }
+  }
+}
