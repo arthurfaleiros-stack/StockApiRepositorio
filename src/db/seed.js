@@ -3,13 +3,13 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 async function runSeeds() {
-  console.log('🌱 Iniciando população de dados iniciais (seeds) do KStock-API...');
+  console.log(' Iniciando população de dados iniciais (seeds) do KStock-API...');
 
   const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 3306,
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
+    password: process.env.DB_PASSWORD || 'senai@604',
     database: process.env.DB_NAME || 'kstock_db'
   };
 
@@ -99,7 +99,7 @@ async function runSeeds() {
     }
     console.log(' Produtos criados/atualizados.');
 
-    console.log('🌱 Seeds concluídos com sucesso!');
+    console.log(' Seeds concluídos com sucesso!');
   } catch (error) {
     console.error(' Erro ao executar seeds:', error.message);
     throw error;
