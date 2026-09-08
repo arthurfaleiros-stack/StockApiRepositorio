@@ -13,7 +13,7 @@ async function startServer() {
     await ping();
     console.log(' Conexão com banco de dados MySQL ativa e operante.');
   } catch (err) {
-    console.warn('⚠️  Aviso: Não foi possível conectar ao banco de dados no momento.');
+    console.warn('  Aviso: Não foi possível conectar ao banco de dados no momento.');
     console.warn(`    Motivo: ${err.message}`);
     console.warn('    Execute as migrations ("npm run migrate") assim que o MySQL estiver acessível.');
   }
@@ -28,9 +28,9 @@ async function startServer() {
 
   // Tratamento de encerramento gracioso (Graceful Shutdown)
   const shutdown = (signal) => {
-    console.log(`\n🛑 Sinal ${signal} recebido. Encerrando servidor graciosamente...`);
+    console.log(`\n Sinal ${signal} recebido. Encerrando servidor graciosamente...`);
     server.close(() => {
-      console.log('🔒 Servidor HTTP encerrado.');
+      console.log(' Servidor HTTP encerrado.');
       process.exit(0);
     });
   };

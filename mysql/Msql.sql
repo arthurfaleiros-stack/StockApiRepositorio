@@ -6,7 +6,7 @@ CREATE TABLE public.USUARIO (
   id bigint,
   nome text,
   email text,
-  senha_hash text,
+  senha_hash t  ext,
   perfil text
 );
 CREATE TABLE public.ASSINATURA (
